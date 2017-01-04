@@ -10,12 +10,18 @@ where only the date changes. There's no RESTful api so I wrote this robot to
 automate posting my ad. Once posted, the URL to the ad is emailed to the account
 that posted it via MailGun. Why site doesn't provide this feature I don't know.
 
+This script is set to run once a week via `crontab` the `--day|-d` option
+specifies the `next day of the week` that this ad corresponds to (it's time
+limited). The next date is computed and then substituted into the title of the
+ad which is defined in a .json config file.
+
 At some point I plan to refactor Site and MailGunHelper into gems complete with
 gemspecs and defined dependencies so you wont have to install requirements
 manually.
 
 - [Requirements](#requirements)
 - [Configuration](#configuration)
+- [Script Invocation](#invocation)
 
 ---
 
@@ -57,10 +63,50 @@ name as the account for example:
 ```
 export FOO=/Some/Path/to/the/dotenv_file/.foo
 ```
-foo.json 
+foo.json
 ```
 {
   "account": "foo",
   ...
 }
+```
+
+### Sample .json config file
+
+The data is pretty much always the same, except the month and date. The script
+will replace `#{month}` and `#{date}` with date determined by the command line
+option `--day|-d` (See [invocation](#invocation) for option details).
+
+```
+{
+  "account": "foo",
+   "title": "required: #{month}#{date} the month and date fields will be replaced with actual data",
+   "body": "The Body",
+   "url":  "Optional: URL to include in the ad",
+   "address": {
+     "address": "555 Fake Street",
+     "city": "Some City",
+     "state": "CA",
+     "zip": "90210",
+     "country": "United States"
+   }
+}
+```
+
+### Sample Mailgun shim
+```
+MAILGUN_API_KEY=your_mailgun_key
+MAILGUN_DOMAIN=your_mailgun_domain
+```
+
+### Sample Account/Site shim
+```
+SITE_USERNAME=your_username
+SITE_PASSWORD=your_password
+```
+
+Invocation
+-----------
+```
+ruby post_to_site.rb --day 0-6 --config path_to_file
 ```
