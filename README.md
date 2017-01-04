@@ -110,3 +110,20 @@ Invocation
 ```
 ruby post_to_site.rb --day 0-6 --config path_to_file
 ```
+
+### Options
+
+* day, d - The day of the week that this time sensitive ad runs until.
+* config, c - A .json config file containing all the data for the ad including
+which account to post it under.
+
+### Example Invocation
+```
+ruby post_to_site.rb -d 3 -c ~/ad_configs/wednesday_ad.json
+```
+
+The above will compute the date for next Wednesday, (-d 3), if run on Tuesday
+will return tomorrow's (Wednesday's) date, if run on Thursday, will return next
+Wednesday's date. The .json file is loaded, and the browser will log into
+`account` and the **#{month}** and **#{date}** will be replaced by next
+Wednesday and the ad is posted to site.
